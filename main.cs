@@ -25,7 +25,7 @@ class Solution
                 Duration = int.Parse(inputs[1])
             };
             
-            for (int speed = maxSpeed; speed >= 0; speed--)
+            for (int speed = maxSpeed; speed > 0; speed--)
             {
                 if (CanCross(fire, speed))
                 {
@@ -35,15 +35,69 @@ class Solution
             fires.Add(fire);
         }
         fires.ForEach(f => { Console.Error.WriteLine(f); });
-        
-        Console.WriteLine("answer");
-    }
 
-    static bool CanCross(Fire feu, int speed)
+        var rep = GetSimilarSpeedMax(fires);
+        Console.Error.WriteLine("rep " + rep);
+        Console.WriteLine(rep);
+    }
+    /// <summary>
+    /// Recupère la vitesse maximum communes des feux
+    /// </summary>
+    /// <param name="fires">Listes des feux</param>
+    /// <returns>Vitesse maximum commune de tous les feux</returns>
+    static int GetSimilarSpeedMax(List<Fire> fires)
     {
-        return true;
+        var speedMax = 0;
+        foreach(var speed in fires.First().Speeds)
+        {
+            var ok = false;
+            foreach (var fire in fires)
+            {
+                if(fire.Speeds.Contains(speed))
+                {
+                    ok = true;
+                }
+                else
+                {
+                    ok = false;
+                    break;
+                }
+            }
+            if(ok)
+            {
+                return speed;
+            }
+        }
+
+        return speedMax;
+    }
+    /// <summary>
+    /// Verifie si on peut traverser le feu vert a cette vitesse
+    /// </summary>
+    /// <param name="fire">feu en question</param>
+    /// <param name="speed">vitesse</param>
+    /// <returns>True si la vitesse permet de traverser le feu vert sinon False</returns>
+    static bool CanCross(Fire fire, int speed)
+    {
+        // mettre
+        // seconde
+        //0,277778
+        var kmDist = Convert.ToDecimal(fire.Distance) / 1000;
+        var time = kmDist / speed;//en heure
+        var timeFire = Convert.ToDecimal(fire.Duration) / 3600;
+        /*var time = fire.Distance / (speed * 0.277778);
+        var timeFire = fire.Duration;*/
+        Console.Error.WriteLine("Vit " + speed + " time " + time + " timefire " + timeFire);
+        if (time <= timeFire || ((timeFire*2) <= time && time <= (timeFire*3)) || ((timeFire * 4) <= time && time <= (timeFire * 5)))
+        {
+            return true;
+        }
+        return false;
     }
 }
+/// <summary>
+/// Classe representant le feu
+/// </summary>
 class Fire
 {
     public int Distance { get; set; } // en mettre
