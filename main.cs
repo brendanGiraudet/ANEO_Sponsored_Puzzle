@@ -78,17 +78,14 @@ class Solution
     static bool CanCross(Fire fire, int speed)
     {
         var rep = false;
-        float toKm = 1000;
-        float toHour = 3600;
-        var kmDist = fire.Distance / toKm;
-
-        var time = kmDist / speed;//en heure
-        var timeFire = float.Parse(fire.Duration.ToString()) / toHour;
+        float speedConverted = speed * (float)0.277778;
+        var time = Math.Round(fire.Distance / speedConverted, MidpointRounding.AwayFromZero);//en seconde
+        var timeFire = float.Parse(fire.Duration.ToString());
         if (time <= timeFire)
         {
             return true;
         }
-        var i = 2;
+        var i = 1;
         var tic = timeFire * (i - 1);
         var tac = timeFire * i;
         do
@@ -96,8 +93,15 @@ class Solution
             i++;
             tic = timeFire * (i - 1);
             tac = timeFire * i;
+            if(speed == 90 || speed == 67)
+                Console.Error.WriteLine("speed " + speed + " tic " + (i - 1).ToString() + " " + +tic + " time " + time + " tac " + tac);
 
-            if (i % 2 != 0 && tic <= time && time <= tac)
+            if(i % 2 == 0 && time == tac)
+            {
+                return true;
+            }
+
+            if (i % 2 != 0 && tic < time && time <= tac)
             {
                 return true;
             }
