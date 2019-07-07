@@ -22,8 +22,7 @@ class Solution
             var fire = new Fire
             {
                 Distance = int.Parse(inputs[0]),
-                Duration = int.Parse(inputs[1]),
-                DistanceAfterFire = (fires.Count > 0) ? int.Parse(inputs[0]) - fires[i - 1].Distance : 0
+                Duration = int.Parse(inputs[1])
             };
 
             for (int speed = maxSpeed; speed > 0; speed--)
@@ -47,7 +46,6 @@ class Solution
     /// <returns>Vitesse maximum commune de tous les feux</returns>
     static int GetSimilarSpeedMax(List<Fire> fires)
     {
-        var speedMax = 0;
         foreach (var speed in fires.First().Speeds)
         {
             var ok = false;
@@ -69,7 +67,7 @@ class Solution
             }
         }
 
-        return speedMax;
+        return 0;
     }
     /// <summary>
     /// Verifie si on peut traverser le feu vert a cette vitesse
@@ -79,31 +77,31 @@ class Solution
     /// <returns>True si la vitesse permet de traverser le feu vert sinon False</returns>
     static bool CanCross(Fire fire, int speed)
     {
-        decimal toKm = 1000;
-        decimal toHour = 3600;
+        var rep = false;
+        float toKm = 1000;
+        float toHour = 3600;
         var kmDist = fire.Distance / toKm;
-        
+
         var time = kmDist / speed;//en heure
-        var timeFire = Convert.ToDecimal(fire.Duration) / toHour;
+        var timeFire = float.Parse(fire.Duration.ToString()) / toHour;
         if (time <= timeFire)
         {
             return true;
         }
         var i = 2;
+        var tic = timeFire * (i - 1);
+        var tac = timeFire * i;
         do
         {
             i++;
-            if(speed == 54)
-            {
-                Console.Error.WriteLine("dis " + kmDist + " Vit " + speed + " time " + time + " timefire " + timeFire);
-                Console.Error.WriteLine("i " + i + " tic " + timeFire * (i - 1) + " tac " + timeFire * i);
-            }
-            
-            if (i % 2 != 0 && (timeFire * (i - 1)) <= time && time <= (timeFire * i))
+            tic = timeFire * (i - 1);
+            tac = timeFire * i;
+
+            if (i % 2 != 0 && tic <= time && time <= tac)
             {
                 return true;
             }
-        } while (time > (timeFire * i));
+        } while (time >= tic);
 
         return false;
     }
@@ -113,13 +111,12 @@ class Solution
 /// </summary>
 class Fire
 {
-    public int DistanceAfterFire { get; set; }
     public int Distance { get; set; } // en metres
     public int Duration { get; set; } // en secondes
     public List<int> Speeds { get; set; } = new List<int>();
 
     public override string ToString()
     {
-        return "Dist : " + Distance + " Dist after fire : " + DistanceAfterFire + "m Dur : " + Duration + "s Speed : " + string.Join(',', Speeds);
+        return "Dist : " + Distance + "m Dur : " + Duration + "s Speed : " + string.Join(',', Speeds);
     }
 }
